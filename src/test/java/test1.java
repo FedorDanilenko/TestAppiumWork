@@ -41,9 +41,8 @@ public class test1 {
     public void testTap() throws InterruptedException {
         TouchAction action = new TouchAction(driver);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        int sizeX = driver.manage().window().getSize().width;
-        int sizeY = driver.manage().window().getSize().height;
-
+        int width = driver.manage().window().getSize().width;
+        int height = driver.manage().window().getSize().height;
 
         // Открытие домашнего экрана
         driver.pressKey(new KeyEvent(AndroidKey.HOME));
@@ -52,15 +51,16 @@ public class test1 {
         driver.findElementByAccessibilityId("Chrome").click();
 
 
-        Thread.sleep(20); //Задержка перед нажатием
+        Thread.sleep(1000); //Задержка перед нажатием
         // Нажатие на строку поиска
         action.tap(PointOption.point(500, 650)).perform();
 
         // Ввод требуемого запроса
-        Thread.sleep(20); //Задержка перед нажатием
+//        Thread.sleep(20); //Задержка перед нажатием
         driver.getKeyboard().sendKeys("pizza");
         driver.pressKey(new KeyEvent(AndroidKey.ENTER));
 
+        // Скролинг вниз
 
     }
 
