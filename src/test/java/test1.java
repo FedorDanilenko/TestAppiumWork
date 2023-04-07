@@ -5,14 +5,20 @@ import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 
@@ -43,6 +49,7 @@ public class test1 {
     @Test
     public void testTap() throws InterruptedException {
         TouchAction action = new TouchAction(driver);
+        int[] pointTap;
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         // Открытие домашнего экрана
@@ -56,7 +63,6 @@ public class test1 {
         action.tap(PointOption.point(500, 650)).perform();
 
         // Ввод требуемого запроса
-//        Thread.sleep(20); //Задержка перед нажатием
         driver.getKeyboard().sendKeys("pizza");
         driver.pressKey(new KeyEvent(AndroidKey.ENTER));
 
@@ -65,11 +71,17 @@ public class test1 {
         swipeScreen(Direction.UP);
         action.tap(PointOption.point(500, 500)).perform();
 
+        // Делаем скриншот, отпраляем неросети, получаем координаты нажатия
+        Thread.sleep(2000);
+        pointTap = takePic();
+        action.tap(PointOption.point(pointTap[0], pointTap[1]));
+
     }
 
     @AfterMethod
     public void end() { driver.quit(); }
 
+    // Метод для свайпа в нужном направлении
     public void swipeScreen (Direction dir) {
 
         final int ANIMATION_TIME=200; // Время для анимации
@@ -118,6 +130,46 @@ public class test1 {
         } catch (InterruptedException e) {
             // ignore
         }
+    }
+
+    // Метод для отправки скриншота на обработку нейросети
+    public int[] takePic() {
+
+        int [] res = new int[2];
+        int tapX, tapY;
+
+        Dimension sizeScreen = driver.manage().window().getSize();
+
+        // Делаем скриншот экрана.
+        File pic = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+
+        if (pic.length() != 0) {
+            try {
+                // конвертация скриншота в Base64 для отправкин на сервер с нейросетью
+                byte[] picBytes = Files.readAllBytes(pic.toPath());
+                String base64pic = Base64.getEncoder().encodeToString(picBytes);
+
+                // отправка скриншота на обработку
+                // ..
+                // Зависит от способа получения данных сервером и сопособа обработки изображения
+                // Предпологается что серевер возвращает координаты для нажатия
+                tapX = (int) (Math.random() * sizeScreen.width);
+                tapY = (int) (Math.random() * sizeScreen.height);
+
+                res = new int[]{tapX, tapY};
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else System.err.println("Скриншот не был загружен");
+
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+
+        return res;
     }
 
     public enum Direction {
