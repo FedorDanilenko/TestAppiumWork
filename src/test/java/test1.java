@@ -21,30 +21,29 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
-
 public class test1 {
 
     private AndroidDriver driver;
 
     @BeforeMethod
     public void setUp() throws MalformedURLException {
-        DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setCapability("deviceName", "pixel");
-        // Имя ОС на мобильном устройстве
-        caps.setCapability("platformName", "Android");
-        // Версия ОС
-        caps.setCapability("platformVersion", "9.0");
-        // Уникальный индефикатор подключенного устройства
-        caps.setCapability("udid", "emulator-5554");
-        // Открытие начального экрана
-        caps.setCapability("appActivity", "com.android.launcher3.Launcher");
+        try {
+            DesiredCapabilities caps = new DesiredCapabilities();
+            caps.setCapability("deviceName", "pixel");
+            // Имя ОС на мобильном устройстве
+            caps.setCapability("platformName", "Android");
+            // Версия ОС
+            caps.setCapability("platformVersion", "9.0");
+            // Уникальный индефикатор подключенного устройства
+            caps.setCapability("udid", "emulator-5554");
+            // Открытие начального экрана
+            caps.setCapability("appActivity", "com.android.launcher3.Launcher");
 
-
-
-
-        driver = new AndroidDriver(new URL("http://0.0.0.0:4723/wd/hub"), caps);
+            driver = new AndroidDriver(new URL("http://0.0.0.0:4723/wd/hub"), caps);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
-
 
     @Test
     public void testTap() throws InterruptedException {
@@ -177,6 +176,5 @@ public class test1 {
         DOWN,
         LEFT,
         RIGHT;
-
     }
 }
